@@ -89,7 +89,7 @@
       var counter = 0;
         //keep track of number of 1s
       for (var i = 0; i < row.length; i++) {
-        if (row[i] === 1) {
+        if (row[i]) {
           counter++;
         }
       }
@@ -123,7 +123,7 @@
       var counter = 0;
       for (var i = 0; i < this.rows().length; i++) {
         // march through rows at same col
-        if (this.get(i)[colIndex] === 1) {
+        if (this.get(i)[colIndex]) {
           counter++;
         }
       }
@@ -170,7 +170,7 @@
       }
       //iterate over box --> start loop at currRow; end loop at num of rows/cols that exist; 
       for (var i = currRow; i < this.rows().length; i++) {
-        if (this.get(i)[currCol] === 1) {
+        if (this.get(i)[currCol]) {
           counter++;
         }
         currCol++;
@@ -183,7 +183,7 @@
     hasAnyMajorDiagonalConflicts: function() {
       var maxBoardIndex = this.rows().length - 1;
       //iterate over each diagonal
-      for (var i = -maxBoardIndex + 1; i < maxBoardIndex; i++) {
+      for (var i = -maxBoardIndex; i <= maxBoardIndex; i++) {
         //check for conflict and return if so
         if (this.hasMajorDiagonalConflictAt(i)) {
           return true;
@@ -199,12 +199,48 @@
     //
     // test if a specific minor diagonal on this board contains a conflict
     hasMinorDiagonalConflictAt: function(minorDiagonalColumnIndexAtFirstRow) {
-      return false; // fixme
+      var head = minorDiagonalColumnIndexAtFirstRow;
+      var counter = 0;
+      var maxBoardIndex = this.rows().length - 1;
+      var currRow;
+      var currCol;
+      
+      // null check
+      if (head < 0 || head > maxBoardIndex * 2 || head === undefined) {
+        return null;
+      }
+      
+      // head will be a num from 0 to (2 * maxBoardIndex of box)
+      if (head > maxBoardIndex) {
+        currRow = head - maxBoardIndex;
+        currCol = maxBoardIndex;
+      }
+      if (head <= maxBoardIndex) {
+        currRow = 0;
+        currCol = head;
+      }
+      // loop start from curr row, end when run out rows (is when curr row = head! fancy!)
+      for (var i = currRow; i < this.rows().length; i++) {
+        // check the currCol index inside currRow
+        if (this.get(i)[currCol]) {
+        // increment counter if conflict found
+          counter++;
+        }
+        // decrement currCol
+        currCol--;
+      }
+      return counter > 1;
     },
 
     // test if any minor diagonals on this board contain conflicts
     hasAnyMinorDiagonalConflicts: function() {
-      return false; // fixme
+      var maxBoardIndex = this.rows().length - 1;
+      for (var i = 0; i <= (maxBoardIndex * 2); i++) {
+        if (this.hasMinorDiagonalConflictAt(i)) {
+          return true;
+        }
+      }
+      return false;
     }
 
     /*--------------------  End of Helper Functions  ---------------------*/
