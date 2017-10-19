@@ -140,7 +140,7 @@
           return true;
         }
       }
-      return false; // fixme
+      return false;
     },
 
 
@@ -149,13 +149,47 @@
     // --------------------------------------------------------------
     //
     // test if a specific major diagonal on this board contains a conflict
-    hasMajorDiagonalConflictAt: function(majorDiagonalColumnIndexAtFirstRow) {
-      return false; // fixme
+    hasMajorDiagonalConflictAt: function(majorDiagonalColumnIndexAtFirstRow) { 
+      var head = majorDiagonalColumnIndexAtFirstRow;
+      var counter = 0;
+      var currRow;
+      var currCol;
+      
+      // null check
+      if (Math.abs(head) >= this.rows().length || head === undefined) {
+        return null;
+      }
+      // treat the parameter differently based on if it's 0, neg, or pos num
+      if (head >= 0) {
+        currRow = 0;
+        currCol = head;
+      }
+      if (head < 0) {
+        currRow = -head;
+        currCol = 0;
+      }
+      //iterate over box --> start loop at currRow; end loop at num of rows/cols that exist; 
+      for (var i = currRow; i < this.rows().length; i++) {
+        if (this.get(i)[currCol] === 1) {
+          counter++;
+        }
+        currCol++;
+      }
+      // stop checking for next diag right (in next row) when it hits an undefined
+      return counter > 1;
     },
 
     // test if any major diagonals on this board contain conflicts
     hasAnyMajorDiagonalConflicts: function() {
-      return false; // fixme
+      var maxBoardIndex = this.rows().length - 1;
+      //iterate over each diagonal
+      for (var i = -maxBoardIndex + 1; i < maxBoardIndex; i++) {
+        //check for conflict and return if so
+        if (this.hasMajorDiagonalConflictAt(i)) {
+          return true;
+        }
+      }
+      return false;
     },
 
 
