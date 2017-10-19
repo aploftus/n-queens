@@ -33,30 +33,26 @@ window.findNRooksSolution = function(n) {
   var board = new Board({'n': n});
   //initialize startRow, startCol as 0
   var r = 0;
-  var c = 0;
-  //place a rook
-  
-    
   //two loops, one for r, one for c; increment
-  
-    //check for conflicts
-      //if none, continue
-      //else, exit and place new rook at (row,col+1) and start over
     //place rooks until we run out of rows (startRow = n)
-    //increment row
-    
   while (r < n) {
+    var c = 0;
     while (c < n) {
+  //place a rook
       board.togglePiece(r, c);
+    //check for conflicts
       if (board.hasAnyColConflicts() || board.hasAnyRowConflicts()) {
+      //else, exit and place new rook at (row,col+1) and start over
         board.togglePiece(r, c);
         c++;
       } else {
+      //if none, continue
         break;
       }
     }
+    //increment row
     r++;
-    c = 0;
+    // reset c so that all solutions will be found, regardless of start col
   }
   
   var solution = board.rows();
@@ -75,7 +71,40 @@ window.countNRooksSolutions = function(n) {
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
-  var solution = undefined; //fixme
+    //create a new Board
+  var board = new Board({'n': n});
+  //initialize startRow, startCol as 0
+  var r = 0;
+  //two loops, one for r, one for c; increment
+    //place rooks until we run out of rows (startRow = n)
+  while (r < n) {
+    var c = 0;
+    while (c < n) {
+  //place a queen
+      board.togglePiece(r, c);
+    //check for all conflicts
+      if (board.hasAnyColConflicts() || 
+          board.hasAnyRowConflicts() || 
+          board.hasAnyMajorDiagonalConflicts() ||
+          board.hasAnyMinorDiagonalConflicts()) {
+      //else, exit and place new queen at (row,col+1) and start over
+        board.togglePiece(r, c);
+        c++;
+      } else {
+      //if none, continue
+        break;
+      }
+    }
+    if (c === n) {
+      board = new Board({'n': n});
+      break;
+    }
+    //increment row
+    r++;
+    // reset c so that all solutions will be found, regardless of start col
+  }
+  
+  var solution = board.rows();
 
   console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
   return solution;
