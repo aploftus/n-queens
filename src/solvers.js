@@ -48,15 +48,15 @@ window.findNRooksSolution = function(n) {
   while (r < n) {
     while (c < n) {
       board.togglePiece(r, c);
-      if (board.hasAnyColConflicts()) {
+      if (board.hasAnyColConflicts() || board.hasAnyRowConflicts()) {
         board.togglePiece(r, c);
         c++;
       } else {
         break;
       }
     }
-    // c++;
     r++;
+    c = 0;
   }
   
   var solution = board.rows();
