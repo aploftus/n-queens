@@ -33,32 +33,27 @@ window.findNRooksSolution = function(n) {
   var board = new Board({'n': n});
   //initialize startRow, startCol as 0
   var r = 0;
-  var c = 0;
-  //place a rook
-  
-    
   //two loops, one for r, one for c; increment
-  
-    //check for conflicts
-      //if none, continue
-      //else, exit and place new rook at (row,col+1) and start over
     //place rooks until we run out of rows (startRow = n)
-    //increment row
-    
   while (r < n) {
+    var c = 0;
     while (c < n) {
+  //place a rook
       board.togglePiece(r, c);
+    //check for conflicts
       if (board.hasAnyColConflicts() || board.hasAnyRowConflicts()) {
+      //else, exit and place new rook at (row,col+1) and start over
         board.togglePiece(r, c);
         c++;
       } else {
+      //if none, continue
         break;
       }
     }
+    //increment row
     r++;
-    c = 0;
+    // reset c so that all solutions will be found, regardless of start col
   }
-  
   var solution = board.rows();
 
   console.log('Single solution for ' + n + ' rooks:', JSON.stringify(solution));
@@ -75,8 +70,58 @@ window.countNRooksSolutions = function(n) {
 
 // return a matrix (an array of arrays) representing a single nxn chessboard, with n queens placed such that none of them can attack each other
 window.findNQueensSolution = function(n) {
-  var solution = undefined; //fixme
-
+  //create a new Board
+  var solvedBoard;
+    //place rooks until we run out of rows (startRow = n)
+  var placeQueens = function(startRow, startCol) {
+    var board = new Board({'n': n});
+    console.log('round: ' + startCol);
+    // if startRow or startCol out of bounds, quit the function.
+    if (startCol === n) {
+      return board;
+    }
+    var r = startRow;
+    var c = startCol;
+    // while row is in bounds
+    while (r < n) {
+      // while col is in bounds
+      while (c < n) {
+        console.log('current loc: ' + r + ',' + c);
+        //place a queen
+        board.togglePiece(r, c);
+        //check for all conflicts
+        if (board.hasAnyColConflicts() || 
+            board.hasAnyRowConflicts() || 
+            board.hasAnyMajorDiagonalConflicts() ||
+            board.hasAnyMinorDiagonalConflicts()) {
+        // if yes, take queen off, look at next col, and start round over
+          board.togglePiece(r, c);
+          c++;
+        } else {
+        //if none, we can move on to next round by ***
+          break;
+        }
+      }
+      // if at any point, we have looked at all col of a row and we find nowhere without conflicts
+      if (c === n && r < n) {
+        // and try from the beginning, startRow = 0, startCol = startCol+1;
+        board = placeQueens(startRow, startCol + 1);
+        return board;
+      }
+      // *** looking at the next row
+      r++;
+      // always starting at the first column
+      c = 0;
+      console.log('next loc: ' + r + ',' + c);
+      if (r === n) {
+        return board;
+      }
+    }
+  };
+  
+  solvedBoard = placeQueens(0, 0);
+  
+  var solution = solvedBoard.rows();
   console.log('Single solution for ' + n + ' queens:', JSON.stringify(solution));
   return solution;
 };
